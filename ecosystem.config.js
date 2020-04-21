@@ -3,8 +3,8 @@ module.exports = {
     {
       name: 'erp-backend',
       script: 'npm',
-
-      args: 'run start:prod',
+      cwd: '/root/erp-backend/dist',
+      args: 'start:prod',
       instances: 1,
       autorestart: true,
       watch: false,
