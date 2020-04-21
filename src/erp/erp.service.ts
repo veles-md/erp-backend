@@ -11,4 +11,9 @@ export class ERPService {
     @InjectModel(CategoryRef)
     private readonly categoryModel: Model<CategoryModel>,
   ) {}
+
+  // Categories
+  async getCategories(): Promise<CategoryModel[]> {
+    return await this.categoryModel.find({}).exec();
+  }
 }

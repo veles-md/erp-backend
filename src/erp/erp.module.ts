@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { CategoryRef, CategorySchema, StockRef, StockSchema } from './schemas';
 import { ProductRef, ProductSchema } from './schemas/product.schema';
+import { ERPService } from './erp.service';
+import { ERPController } from './erp.controller';
 
 @Module({
   imports: [
@@ -12,5 +14,7 @@ import { ProductRef, ProductSchema } from './schemas/product.schema';
       { name: ProductRef, schema: ProductSchema },
     ]),
   ],
+  controllers: [ERPController],
+  providers: [ERPService],
 })
 export class ERPModule {}
