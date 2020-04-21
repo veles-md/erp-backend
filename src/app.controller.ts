@@ -9,4 +9,9 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get('/env')
+  getEnv() {
+    return process.env.NODE_ENV;
+  }
 }
