@@ -26,7 +26,7 @@ jobs:
     steps:
       - run:
           name: Deploying to production
-          command: ssh ${user}@${host} "cd ~/${project_folder}; git pull; npm i; pm2 stop ${project_folder}; npm run build; pm2 start ${project_folder};"
+          command: ssh ${user}@${host} "cd ${project_folder}; git pull; npm i; pm2 stop ${project_folder}; npm run build; pm2 start ${project_folder};"
 
 workflows:
   version: 2
