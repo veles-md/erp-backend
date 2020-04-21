@@ -26,7 +26,7 @@ jobs:
     steps:
       - run:
           name: Deploying to production
-          command: ssh ${user}@${host} "cd ${project_folder}; git pull; npm i; pm2 stop ${project_folder}; npm run build; pm2 start ecosystem.config.js;"
+          command: ssh ${user}@${host} "cd ${project_folder}; git pull; npm i; pm2 stop ecosystem.config.js; npm run build; pm2 start ecosystem.config.js [--env production];"
 
 workflows:
   version: 2
