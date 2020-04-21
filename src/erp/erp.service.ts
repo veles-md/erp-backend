@@ -16,4 +16,7 @@ export class ERPService {
   async getCategories(): Promise<CategoryModel[]> {
     return await this.categoryModel.find({}).exec();
   }
+  async createCategory(cateory: any): Promise<CategoryModel> {
+    return await new this.categoryModel(cateory).save();
+  }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Body, Post } from '@nestjs/common';
 import { ERPService } from './erp.service';
 import { CategoryModel } from './interfaces';
 
@@ -9,5 +9,10 @@ export class ERPController {
   @Get('/categories')
   async getCategories(): Promise<CategoryModel[]> {
     return await this.erpService.getCategories();
+  }
+
+  @Post('/categories')
+  async createCategory(@Body() cateory): Promise<CategoryModel> {
+    return await this.erpService.createCategory(cateory);
   }
 }
