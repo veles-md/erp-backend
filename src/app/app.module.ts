@@ -19,15 +19,12 @@ import { AppService } from './app.service';
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => {
-        console.log(configService.get('database'));
-        return {
-          uri: configService.get<string>('database.connection'),
-          useUnifiedTopology: true,
-          useNewUrlParser: true,
-          useCreateIndex: true,
-        };
-      },
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('database.connection'),
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+        useCreateIndex: true,
+      }),
       inject: [ConfigService],
     }),
     ERPModule,
