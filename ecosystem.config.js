@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'erp-backend',
-      script: 'dist/index.js',
+      script: 'dist/main.js',
       env: {
         NODE_ENV: 'development',
       },
