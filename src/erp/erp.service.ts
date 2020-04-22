@@ -50,7 +50,12 @@ export class ERPService {
     id: string,
     product: UpdateProductDto,
   ): Promise<ProductModel> {
-    return await this.productModel.findByIdAndUpdate(id, product).exec();
+    return await this.productModel
+      .findByIdAndUpdate(id, product, {
+        new: true,
+      })
+      .populate('category')
+      .exec();
   }
   async removeProduct(id: string) {
     return await this.productModel.findByIdAndRemove(id).exec();

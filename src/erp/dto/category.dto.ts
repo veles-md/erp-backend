@@ -8,7 +8,7 @@ export class CreateCategoryDto implements Category {
   @MaxLength(20)
   readonly title: string;
   @IsString()
-  @MinLength(2)
+  @MinLength(1)
   @MaxLength(5)
   readonly unit: string;
 }
@@ -18,7 +18,7 @@ export class UpdateCategoryDto implements Category {
   @MaxLength(20)
   readonly title: string;
   @IsString()
-  @MinLength(2)
+  @MinLength(1)
   @MaxLength(5)
   readonly unit: string;
 }
