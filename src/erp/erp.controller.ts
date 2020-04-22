@@ -77,14 +77,14 @@ export class ERPController {
   async createStock(@Body() stock: CreateStockDto): Promise<StockModel> {
     return await this.erpService.createStock(stock);
   }
-  @Put('/stock/:id')
+  @Put('/stocks/:id')
   async updateStock(
     @Param('id') id: string,
     @Body() stock: UpdateStockDto,
   ): Promise<StockModel> {
     return await this.erpService.updateStock(id, stock);
   }
-  @Delete('/stock/:id')
+  @Delete('/stocks/:id')
   async removeStock(@Param('id') id: string) {
     return await this.erpService.removeStock(id);
   }
