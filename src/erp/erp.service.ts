@@ -29,7 +29,7 @@ export class ERPService {
 
   // Products
   async getProducts(): Promise<ProductModel[]> {
-    return await this.productModel.find({}).exec();
+    return await this.productModel.find({}).populate('category').exec()
   }
   async createProduct(product: any): Promise<ProductModel> {
     return await new this.productModel(product).save();
