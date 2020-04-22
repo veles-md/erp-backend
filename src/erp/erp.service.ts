@@ -43,6 +43,9 @@ export class ERPService {
   }
 
   // Stocks
+  async getStock(id: string): Promise<StockModel> {
+    return await this.stockModel.findById(id).exec();
+  }
   async getStocks(): Promise<StockModel[]> {
     return await this.stockModel.find({}).exec();
   }
@@ -54,5 +57,25 @@ export class ERPService {
   }
   async removeStock(id) {
     return await this.stockModel.findByIdAndRemove(id).exec();
+  }
+  async stockNextIncomeWaybill(id: string): Promise<string> {
+    let result = await this.stockModel
+      .findByIdAndUpdate(id, {
+        $inc: { incomeWaybillCount: 1 },
+      })
+      .exec();
+    return `${result.waybillPrefix}-${
+      result.toObject().incomeWaybillCount + 1
+    }`;
+  }
+  async stockNextOutcomeWaybill(id: string): Promise<string> {
+    let result = await this.stockModel
+      .findByIdAndUpdate(id, {
+        $inc: { outcomeWaybillCount: 1 },
+      })
+      .exec();
+    return `${result.waybillPrefix}-${
+      result.toObject().outcomeWaybillCount + 1
+    }`;
   }
 }
