@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 
 import { CategoryRef, ProductRef, StockRef } from './schemas';
 import { CategoryModel, ProductModel, StockModel } from './interfaces';
+import { UpdateCategoryDto, CreateCategoryDto } from './dto';
 
 @Injectable()
 export class ERPService {
@@ -18,13 +19,16 @@ export class ERPService {
   async getCategories(): Promise<CategoryModel[]> {
     return await this.categoryModel.find({}).exec();
   }
-  async createCategory(category: any): Promise<CategoryModel> {
+  async createCategory(category: CreateCategoryDto): Promise<CategoryModel> {
     return await new this.categoryModel(category).save();
   }
-  async updateCategory(id, category): Promise<CategoryModel> {
+  async updateCategory(
+    id,
+    category: UpdateCategoryDto,
+  ): Promise<CategoryModel> {
     return await this.categoryModel.findByIdAndUpdate(id, category).exec();
   }
-  async removeCategory(id) {
+  async removeCategory(id: string) {
     return await this.categoryModel.findByIdAndDelete(id).exec();
   }
 

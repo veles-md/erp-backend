@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ERPService } from './erp.service';
 import { CategoryModel, ProductModel, StockModel } from './interfaces';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 
 @Controller('/erp')
 export class ERPController {
@@ -27,11 +27,14 @@ export class ERPController {
     return await this.erpService.createCategory(cateory);
   }
   @Put('/categories/:id')
-  async updateCategory(@Param('id') id: string, @Body() category) {
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() category: UpdateCategoryDto,
+  ) {
     return await this.erpService.updateCategory(id, category);
   }
   @Delete('/categories/:id')
-  async removeCategory(@Param('id') id) {
+  async removeCategory(@Param('id') id: string) {
     return await this.erpService.removeCategory(id);
   }
 
