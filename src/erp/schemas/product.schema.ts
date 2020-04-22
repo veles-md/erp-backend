@@ -15,16 +15,6 @@ export const ProductSchema = new Schema(
       ref: CategoryRef,
       required: true,
     },
-
-    price_retail: {
-      type: Number,
-      default: 0,
-    },
-
-    price_wholesale: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true,

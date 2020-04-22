@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { CategoryRef, CategorySchema, StockRef, StockSchema } from './schemas';
-import { ProductRef, ProductSchema } from './schemas/product.schema';
+import {
+  CategoryRef,
+  CategorySchema,
+  StockRef,
+  StockSchema,
+  ProductRef,
+  ProductSchema,
+} from './schemas';
 import { ERPService } from './erp.service';
 import { ERPController } from './erp.controller';
 
