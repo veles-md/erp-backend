@@ -44,7 +44,9 @@ export class ERPService {
     return await this.productModel.find({}).populate('category').exec();
   }
   async createProduct(product: CreateProductDto): Promise<ProductModel> {
-    return await new this.productModel(product).save();
+    return await (
+      await new this.productModel(product).populate('category').save()
+    ).execPopulate();
   }
   async updateProduct(
     id: string,
