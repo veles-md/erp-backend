@@ -4,7 +4,14 @@ import { Model } from 'mongoose';
 
 import { CategoryRef, ProductRef, StockRef } from './schemas';
 import { CategoryModel, ProductModel, StockModel } from './interfaces';
-import { UpdateCategoryDto, CreateCategoryDto } from './dto';
+import {
+  UpdateCategoryDto,
+  CreateCategoryDto,
+  CreateProductDto,
+  UpdateProductDto,
+  CreateStockDto,
+  UpdateStockDto,
+} from './dto';
 
 @Injectable()
 export class ERPService {
@@ -23,7 +30,7 @@ export class ERPService {
     return await new this.categoryModel(category).save();
   }
   async updateCategory(
-    id,
+    id: string,
     category: UpdateCategoryDto,
   ): Promise<CategoryModel> {
     return await this.categoryModel.findByIdAndUpdate(id, category).exec();
@@ -36,13 +43,16 @@ export class ERPService {
   async getProducts(): Promise<ProductModel[]> {
     return await this.productModel.find({}).populate('category').exec();
   }
-  async createProduct(product: any): Promise<ProductModel> {
+  async createProduct(product: CreateProductDto): Promise<ProductModel> {
     return await new this.productModel(product).save();
   }
-  async updateProduct(id, product): Promise<ProductModel> {
+  async updateProduct(
+    id: string,
+    product: UpdateProductDto,
+  ): Promise<ProductModel> {
     return await this.productModel.findByIdAndUpdate(id, product).exec();
   }
-  async removeProduct(id) {
+  async removeProduct(id: string) {
     return await this.productModel.findByIdAndRemove(id).exec();
   }
 
@@ -53,13 +63,13 @@ export class ERPService {
   async getStocks(): Promise<StockModel[]> {
     return await this.stockModel.find({}).exec();
   }
-  async createStock(stock): Promise<StockModel> {
+  async createStock(stock: CreateStockDto): Promise<StockModel> {
     return await new this.stockModel(stock).save();
   }
-  async updateStock(id, stock): Promise<StockModel> {
+  async updateStock(id: string, stock: UpdateStockDto): Promise<StockModel> {
     return await this.stockModel.findByIdAndUpdate(id, stock).exec();
   }
-  async removeStock(id) {
+  async removeStock(id: string) {
     return await this.stockModel.findByIdAndRemove(id).exec();
   }
   async stockNextIncomeWaybill(id: string): Promise<string> {
