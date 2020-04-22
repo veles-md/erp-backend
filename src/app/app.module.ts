@@ -7,6 +7,7 @@ import { ERPModule } from 'src/erp';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from 'src/auth';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AppService } from './app.service';
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
     ERPModule,
   ],
   controllers: [AppController],
