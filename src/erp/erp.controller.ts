@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ERPService } from './erp.service';
 import { CategoryModel, ProductModel, StockModel } from './interfaces';
+import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Controller('/erp')
 export class ERPController {
@@ -20,7 +21,9 @@ export class ERPController {
     return await this.erpService.getCategories();
   }
   @Post('/categories')
-  async createCategory(@Body() cateory): Promise<CategoryModel> {
+  async createCategory(
+    @Body() cateory: CreateCategoryDto,
+  ): Promise<CategoryModel> {
     return await this.erpService.createCategory(cateory);
   }
   @Put('/categories/:id')
