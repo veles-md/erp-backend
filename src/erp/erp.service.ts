@@ -33,7 +33,11 @@ export class ERPService {
     id: string,
     category: UpdateCategoryDto,
   ): Promise<CategoryModel> {
-    return await this.categoryModel.findByIdAndUpdate(id, category).exec();
+    return await this.categoryModel
+      .findByIdAndUpdate(id, category, {
+        new: true,
+      })
+      .exec();
   }
   async removeCategory(id: string) {
     return await this.categoryModel.findByIdAndDelete(id).exec();
@@ -74,7 +78,9 @@ export class ERPService {
     return await new this.stockModel(stock).save();
   }
   async updateStock(id: string, stock: UpdateStockDto): Promise<StockModel> {
-    return await this.stockModel.findByIdAndUpdate(id, stock).exec();
+    return await this.stockModel
+      .findByIdAndUpdate(id, stock, { new: true })
+      .exec();
   }
   async removeStock(id: string) {
     return await this.stockModel.findByIdAndRemove(id).exec();
