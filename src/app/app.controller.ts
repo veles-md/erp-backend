@@ -12,6 +12,6 @@ export class AppController {
 
   @Get('/env')
   getEnv() {
-    return process.env.NODE_ENV;
+    return `Running in ${process.env.NODE_ENV}`;
   }
 }
