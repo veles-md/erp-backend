@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ERPService } from './erp.service';
-import { CategoryModel, ProductModel } from './interfaces';
+import { CategoryModel, ProductModel, StockModel } from './interfaces';
 
 @Controller('/erp')
 export class ERPController {
@@ -48,5 +48,23 @@ export class ERPController {
   @Delete('/products/:id')
   async removeProduct(@Param('id') id) {
     return await this.erpService.removeProduct(id);
+  }
+
+  // Stocks
+  @Get('/stocks')
+  async getStocks(): Promise<StockModel[]> {
+    return await this.erpService.getStocks();
+  }
+  @Post('/stocks')
+  async createStock(@Body() stock): Promise<StockModel> {
+    return await this.erpService.createStock(stock);
+  }
+  @Put('/stock/:id')
+  async updateStock(@Param('id') id, @Body() stock): Promise<StockModel> {
+    return await this.erpService.updateStock(id, stock);
+  }
+  @Delete('/stock/:id')
+  async removeStock(@Param('id') id) {
+    return await this.erpService.removeStock(id);
   }
 }

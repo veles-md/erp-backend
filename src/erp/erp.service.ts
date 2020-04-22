@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { CategoryRef, ProductRef } from './schemas';
-import { CategoryModel, ProductModel } from './interfaces';
+import { CategoryRef, ProductRef, StockRef } from './schemas';
+import { CategoryModel, ProductModel, StockModel } from './interfaces';
 
 @Injectable()
 export class ERPService {
@@ -11,6 +11,7 @@ export class ERPService {
     @InjectModel(CategoryRef)
     private readonly categoryModel: Model<CategoryModel>,
     @InjectModel(ProductRef) private readonly productModel: Model<ProductModel>,
+    @InjectModel(StockRef) private readonly stockModel: Model<StockModel>,
   ) {}
 
   // Categories
@@ -29,7 +30,7 @@ export class ERPService {
 
   // Products
   async getProducts(): Promise<ProductModel[]> {
-    return await this.productModel.find({}).populate('category').exec()
+    return await this.productModel.find({}).populate('category').exec();
   }
   async createProduct(product: any): Promise<ProductModel> {
     return await new this.productModel(product).save();
@@ -39,5 +40,19 @@ export class ERPService {
   }
   async removeProduct(id) {
     return await this.productModel.findByIdAndRemove(id).exec();
+  }
+
+  // Stocks
+  async getStocks(): Promise<StockModel[]> {
+    return await this.stockModel.find({}).exec();
+  }
+  async createStock(stock): Promise<StockModel> {
+    return await new this.stockModel(stock).save();
+  }
+  async updateStock(id, stock): Promise<StockModel> {
+    return await this.stockModel.findByIdAndUpdate(id, stock).exec();
+  }
+  async removeStock(id) {
+    return await this.stockModel.findByIdAndRemove(id).exec();
   }
 }
