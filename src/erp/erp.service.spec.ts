@@ -52,6 +52,13 @@ describe('ERP module', () => {
     expect(erpService).toBeDefined();
   });
 
+  it('should create category', async () => {
+    category = await erpService.createCategory({ title: 'Венки', unit: 'м' });
+    const result = await erpService.getCategories();
+    expect(result[0].title).toBe('Венки');
+    expect(result[0].unit).toBe('м');
+  });
+
   it('should create stock', async () => {
     stock = await erpService.createStock({
       title: 'TEST',
