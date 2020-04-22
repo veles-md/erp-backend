@@ -5,7 +5,7 @@ import { MinLength, MaxLength, IsString, Length } from 'class-validator';
 export class CreateCategoryDto implements Category {
   @IsString()
   @MinLength(4)
-  @MaxLength(20)
+  @MaxLength(15)
   readonly title: string;
   @IsString()
   @MinLength(1)
@@ -15,7 +15,7 @@ export class CreateCategoryDto implements Category {
 export class UpdateCategoryDto implements Category {
   @IsString()
   @MinLength(4)
-  @MaxLength(20)
+  @MaxLength(15)
   readonly title: string;
   @IsString()
   @MinLength(1)
