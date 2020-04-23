@@ -30,13 +30,27 @@ export class TransactionService {
           endBalance: {
             $sum: '$change',
           },
-          totalIncome: {
+          income: {
             $sum: {
               $cond: [
                 {
                   $and: [
                     // { $gte: ['$createdAt', startDate] },
                     { $gt: ['$change', 0] },
+                  ],
+                },
+                '$change',
+                0,
+              ],
+            },
+          },
+          outcome: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    // { $gte: ['$createdAt', startDate] },
+                    { $lt: ['$change', 0] },
                   ],
                 },
                 '$change',
