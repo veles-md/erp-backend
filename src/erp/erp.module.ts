@@ -8,9 +8,12 @@ import {
   StockSchema,
   ProductRef,
   ProductSchema,
+  TransactionRef,
+  TransactionSchema,
 } from './schemas';
 import { ERPService } from './erp.service';
 import { ERPController } from './erp.controller';
+import { TransactionService } from './transaction.service';
 
 @Module({
   imports: [
@@ -18,9 +21,10 @@ import { ERPController } from './erp.controller';
       { name: CategoryRef, schema: CategorySchema },
       { name: StockRef, schema: StockSchema },
       { name: ProductRef, schema: ProductSchema },
+      { name: TransactionRef, schema: TransactionSchema },
     ]),
   ],
   controllers: [ERPController],
-  providers: [ERPService],
+  providers: [ERPService, TransactionService],
 })
 export class ERPModule {}
