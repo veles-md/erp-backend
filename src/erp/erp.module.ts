@@ -11,9 +11,10 @@ import {
   TransactionRef,
   TransactionSchema,
 } from './schemas';
+
+import { TransactionService } from './transaction.service';
 import { ERPService } from './erp.service';
 import { ERPController } from './erp.controller';
-import { TransactionService } from './transaction.service';
 
 @Module({
   imports: [
