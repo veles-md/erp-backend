@@ -3,7 +3,7 @@ import { Stock } from '../interfaces';
 
 export class CreateStockDto implements Stock {
   @IsString()
-  @MinLength(5)
+  @MinLength(4)
   @MaxLength(15)
   readonly title: string;
   @IsString()
@@ -13,7 +13,7 @@ export class CreateStockDto implements Stock {
 }
 export class UpdateStockDto implements Stock {
   @IsString()
-  @MinLength(5)
+  @MinLength(4)
   @MaxLength(15)
   readonly title: string;
   @IsString()
