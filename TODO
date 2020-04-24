@@ -2,4 +2,7 @@ Product requires dependencies
     ids to dependencies
     removal of dependency -> removal of Product
     removal of transactions in all stocks
+
+adjust transaction updatedAt/createdat
+enums for price types
     

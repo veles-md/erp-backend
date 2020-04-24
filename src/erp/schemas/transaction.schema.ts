@@ -22,6 +22,24 @@ export const TransactionSchema = new Schema({
       validator: (value: number) => value !== 0,
     },
   },
+  price: {
+    type: {
+      type: String,
+      required: true,
+    },
+    value: {
+      type: Number,
+      required: true,
+    },
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  waybill: {
+    type: String,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
