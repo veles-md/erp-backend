@@ -1,4 +1,4 @@
-export interface Price {
+interface Price {
   readonly value: number;
   readonly type: 'retail' | 'wholesale';
 }

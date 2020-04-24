@@ -5,25 +5,16 @@ import {
   IsOptional,
   IsArray,
   ArrayNotEmpty,
-  IsObject,
+  IsNumber,
 } from 'class-validator';
 
-import { Item } from '../interfaces/waybill-item.interface';
-
-export enum WaybillAction {
-  SELL = 'Продажа',
-  UTILIZATION = 'Утилизация',
-  BUY = 'Покупка',
-  IMPORT = 'Импорт',
-  MOVE = 'Перемещение',
-  PRODUCTION = 'Производство',
-}
+import { Item, WaybillAction } from '../interfaces';
 
 export class CreateWaybillDto {
   @IsDate()
   readonly date: Date;
 
-  @IsObject()
+  @IsNumber()
   readonly action: WaybillAction;
 
   @IsString()
