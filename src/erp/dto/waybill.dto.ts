@@ -8,7 +8,7 @@ import {
   IsNumber,
 } from 'class-validator';
 
-import { Item, WaybillAction } from '../interfaces';
+import { WaybillItem, WaybillAction } from '../interfaces';
 
 export class CreateWaybillDto {
   @IsDate()
@@ -27,5 +27,5 @@ export class CreateWaybillDto {
   readonly destination?: string;
   @IsArray()
   @ArrayNotEmpty()
-  readonly products: Item[];
+  readonly products: WaybillItem[];
 }

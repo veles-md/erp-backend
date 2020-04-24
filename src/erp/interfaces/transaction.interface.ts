@@ -1,8 +1,8 @@
 import { Document } from 'mongoose';
 
-import { Item } from './item.interface';
+import { WaybillItem } from './waybill-item.interface';
 
-export interface Transaction extends Item {
+export interface Transaction extends WaybillItem {
   readonly stock: string;
   readonly waybill: string;
   readonly date: Date;

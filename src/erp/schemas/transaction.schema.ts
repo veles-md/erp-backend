@@ -15,23 +15,23 @@ export const TransactionSchema = new Schema({
     ref: StockRef,
     required: true,
   },
-  change: {
+  quantity: {
     type: Number,
     required: true,
     validate: {
       validator: (value: number) => value !== 0,
     },
   },
-  price: {
-    type: {
-      type: String,
-      required: true,
-    },
-    value: {
-      type: Number,
-      required: true,
-    },
-  },
+  // price: {
+  //   type: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   value: {
+  //     type: Number,
+  //     required: true,
+  //   },
+  // },
   date: {
     type: Date,
     required: true,
