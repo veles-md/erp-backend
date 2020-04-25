@@ -5,7 +5,6 @@ import {
   MaxLength,
   IsNumber,
   IsPositive,
-  IsOptional,
 } from 'class-validator';
 import { Product } from '../interfaces';
 
@@ -19,12 +18,10 @@ export class CreateProductDto implements Product {
   readonly title: string;
   @IsNumber()
   @IsPositive()
-  @IsOptional()
-  readonly price_retail?: number;
+  readonly price_retail: number;
   @IsNumber()
   @IsPositive()
-  @IsOptional()
-  readonly price_wholesale?: number;
+  readonly price_wholesale: number;
 }
 
 export class UpdateProductDto implements Product {
@@ -37,10 +34,8 @@ export class UpdateProductDto implements Product {
   readonly title: string;
   @IsNumber()
   @IsPositive()
-  @IsOptional()
-  readonly price_retail?: number;
+  readonly price_retail: number;
   @IsNumber()
   @IsPositive()
-  @IsOptional()
-  readonly price_wholesale?: number;
+  readonly price_wholesale: number;
 }

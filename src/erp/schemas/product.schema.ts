@@ -15,6 +15,14 @@ export const ProductSchema = new Schema(
       ref: CategoryRef,
       required: true,
     },
+    price_retail: {
+      type: Number,
+      required: true,
+    },
+    price_wholesale: {
+      type: Number,
+      requiredPaths: true,
+    },
   },
   {
     timestamps: true,
