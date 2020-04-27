@@ -1,22 +1,16 @@
 import {
   IsString,
-  IsDate,
   Length,
   IsOptional,
   IsArray,
   ArrayNotEmpty,
-  IsNumber,
 } from 'class-validator';
 
-import { WaybillItem, WaybillAction } from '../interfaces';
+import { WaybillAction } from '../interfaces';
 
 export class CreateWaybillDto {
-  @IsDate()
-  readonly date: Date;
-
-  @IsNumber()
+  @IsString()
   readonly action: WaybillAction;
-
   @IsString()
   @Length(24)
   @IsOptional()
@@ -27,5 +21,5 @@ export class CreateWaybillDto {
   readonly destination?: string;
   @IsArray()
   @ArrayNotEmpty()
-  readonly products: WaybillItem[];
+  readonly products: Array<any>;
 }
