@@ -20,7 +20,7 @@ export const TransactionSchema = new Schema({
     type: Number,
     required: true,
     validate: {
-      validator: (value: number) => value > 0,
+      validator: (value: number) => value !== 0,
     },
   },
   priceType: {
@@ -28,7 +28,7 @@ export const TransactionSchema = new Schema({
     required: true,
   },
   priceValue: {
-    type: String,
+    type: Number,
     required: true,
   },
   waybillType: {
