@@ -6,3 +6,6 @@ Product requires dependencies
 adjust transaction updatedAt/createdat
 enums for price types
     
+
+Removal of waybill -> remove transactions
+Move Waybill / Production waybill two-way binding
