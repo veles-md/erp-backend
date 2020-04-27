@@ -3,7 +3,7 @@ import { Schema } from 'mongoose';
 import { StockRef } from './stock.schema';
 import { TransactionRef } from './transaction.schema';
 
-export const WaybillRef = 'CategoryRef';
+export const WaybillRef = 'WaybillRef';
 export const WaybillSchema = new Schema(
   {
     stock: {
