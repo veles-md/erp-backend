@@ -1,67 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ObjectID } from 'bson';
-import { Model } from 'mongoose';
-import * as moment from 'moment';
+import { Model, Types } from 'mongoose';
 
-import { ERPService } from './erp.service';
 import { TransactionRef } from './schemas';
-import { TransactionModel, Transaction } from './interfaces';
-import { ResidueOpts } from './interfaces/transaction.interface';
-import { CreateWaybillDto, WaybillAction } from './dto';
+import {
+  TransactionModel,
+  Transaction,
+  ResidueOpts,
+  WaybillAction,
+  WaybillType,
+} from './interfaces';
 
 @Injectable()
 export class TransactionService {
   constructor(
     @InjectModel(TransactionRef)
     private readonly transactionModel: Model<TransactionModel>,
-    private readonly erpService: ERPService,
   ) {}
 
-  async makeWaybill(waybill: CreateWaybillDto): Promise<any> {
-    const date = moment().toDate();
-    switch (waybill.action) {
-      case WaybillAction.SELL:
-      case WaybillAction.UTILIZATION:
-        {
-          // Transaction session
-          const waybillNumber = await this.erpService.stockNextOutcomeWaybill(
-            waybill.source,
-          );
-          await Promise.all(
-            waybill.products.map((item) => {
-              this.makeTransaction({
-                stock: waybill.source,
-                product: item.product,
-                price: item.price,
-                change: -Math.abs(item.quantity),
-                waybill: waybillNumber,
-                date: date,
-              });
-            }),
-          );
-        }
-        break;
-      case WaybillAction.BUY:
-      case WaybillAction.IMPORT:
-        {
-        }
-        break;
-      case WaybillAction.MOVE:
-        {
-        }
-        break;
-      case WaybillAction.PRODUCTION:
-        {
-        }
-        break;
-      default:
-        // throw Exception
-        break;
-    }
+  async WriteBulkTransactions(
+    waybillType: WaybillType,
+    actionType: WaybillAction,
+    stock: string,
+    items: any[],
+  ): Promise<TransactionModel[]> {
+    return await Promise.all([
+      ...items.map((item) =>
+        this.WriteTransaction({
+          waybillType: waybillType,
+          actionType: actionType,
+          stock: stock,
+          product: item.product,
+          quantity:
+            waybillType === WaybillType.INCOME
+              ? item.quantity
+              : -1 * item.quantity,
+          priceType: item.priceType,
+          priceValue: item.priceValue,
+        }),
+      ),
+    ]);
   }
 
-  async makeTransaction(transaction: Transaction): Promise<TransactionModel> {
+  async WriteTransaction(transaction: Transaction): Promise<TransactionModel> {
     return await new this.transactionModel(transaction).save();
   }
 
@@ -71,7 +52,7 @@ export class TransactionService {
       .aggregate([
         {
           $match: {
-            stock: new ObjectID(stock),
+            stock: Types.ObjectId(stock),
             createdAt: {
               $lte: endDate,
             },
@@ -81,11 +62,11 @@ export class TransactionService {
           $group: {
             _id: '$product',
             endBalance: {
-              $sum: '$change',
+              $sum: '$quantity',
             },
             startBalance: {
               $sum: {
-                $cond: [{ $lte: ['$createdAt', startDate] }, '$change', 0],
+                $cond: [{ $lte: ['$createdAt', startDate] }, '$quantity', 0],
               },
             },
             income: {
@@ -94,10 +75,10 @@ export class TransactionService {
                   {
                     $and: [
                       { $gte: ['$createdAt', startDate] },
-                      { $gt: ['$change', 0] },
+                      { $gt: ['$quantity', 0] },
                     ],
                   },
-                  '$change',
+                  '$quantity',
                   0,
                 ],
               },
@@ -108,10 +89,10 @@ export class TransactionService {
                   {
                     $and: [
                       { $gte: ['$createdAt', startDate] },
-                      { $lt: ['$change', 0] },
+                      { $lt: ['$quantity', 0] },
                     ],
                   },
-                  '$change',
+                  '$quantity',
                   0,
                 ],
               },
@@ -120,6 +101,7 @@ export class TransactionService {
         },
       ])
       .exec();
+    console.log(aggregated);
     return aggregated;
   }
 }

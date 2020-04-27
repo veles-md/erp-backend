@@ -16,8 +16,11 @@ import {
   StockSchema,
   TransactionRef,
   TransactionSchema,
+  WaybillRef,
+  WaybillSchema,
 } from './schemas';
 import { WaybillAction, PriceType, WaybillType } from './interfaces';
+import { WaybillService } from './waybill.service';
 
 const mongod = new MongoMemoryServer();
 
@@ -29,6 +32,7 @@ afterAll(async () => {
 describe('Transaction service', () => {
   let erpService: ERPService;
   let transactionService: TransactionService;
+  let waybillService: WaybillService;
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [
@@ -45,12 +49,14 @@ describe('Transaction service', () => {
           { name: ProductRef, schema: ProductSchema },
           { name: StockRef, schema: StockSchema },
           { name: TransactionRef, schema: TransactionSchema },
+          { name: WaybillRef, schema: WaybillSchema },
         ]),
       ],
-      providers: [ERPService, TransactionService],
+      providers: [ERPService, TransactionService, WaybillService],
     }).compile();
     erpService = module.get(ERPService);
     transactionService = module.get(TransactionService);
+    waybillService = module.get(WaybillService);
   });
 
   it('Transaction service should be defined', () => {
@@ -72,7 +78,7 @@ describe('Transaction service', () => {
       price_retail: 400,
       price_wholesale: 370,
     });
-    const transaction = await transactionService.makeTransaction({
+    const transaction = await transactionService.WriteTransaction({
       stock: stock._id,
       quantity: 7,
       product: product._id,
@@ -81,6 +87,7 @@ describe('Transaction service', () => {
       priceType: PriceType.RETAIL,
       priceValue: 50,
     });
+    console.log(transaction);
     expect(transaction.priceType).toBe('RETAIL');
     expect(transaction.waybillType).toBe('INCOME');
     expect(transaction.actionType).toBe('BUY');
@@ -110,87 +117,18 @@ describe('Transaction service', () => {
       price_retail: 70,
     });
 
-    await transactionService.makeWaybill({
+    const waybill = await waybillService.createWaybill({
       action: WaybillAction.BUY,
-      products: [
-        {
-          product: product._id,
-          quantity: 5,
-          priceType: PriceType.RETAIL,
-          priceValue: 40,
-        },
-      ],
       destination: stockA._id,
-    });
-    await transactionService.makeWaybill({
-      action: WaybillAction.IMPORT,
       products: [
         {
           product: product._id,
-          quantity: 7,
-          priceType: PriceType.RETAIL,
           priceValue: 30,
+          priceType: PriceType.RETAIL,
+          quantity: 3,
         },
       ],
-      destination: stockA._id,
     });
-    await transactionService.makeWaybill({
-      action: WaybillAction.SELL,
-      products: [
-        {
-          product: product._id,
-          quantity: 2,
-          priceType: PriceType.RETAIL,
-          priceValue: 30,
-        },
-      ],
-      source: stockA._id,
-    });
-    await transactionService.makeWaybill({
-      action: WaybillAction.UTILIZATION,
-      products: [
-        {
-          product: product._id,
-          quantity: 1,
-          priceType: PriceType.RETAIL,
-          priceValue: 30,
-        },
-      ],
-      source: stockA._id,
-    });
-    await transactionService.makeWaybill({
-      action: WaybillAction.MOVE,
-      products: [
-        {
-          product: product._id,
-          quantity: 1,
-          priceType: PriceType.RETAIL,
-          priceValue: 30,
-        },
-      ],
-      source: stockA._id,
-      destination: stockB._id,
-    });
-
-    let result = await transactionService.calculateResidue({
-      stock: stockA._id,
-      startDate: moment.utc().startOf('day').valueOf(),
-      endDate: moment.utc().endOf('day').valueOf(),
-    });
-    expect(result.length).toBe(1);
-    expect(result[0].startBalance).toBe(0);
-    expect(result[0].income).toBe(12);
-    expect(result[0].outcome).toBe(-4);
-    expect(result[0].endBalance).toBe(8);
-    result = await transactionService.calculateResidue({
-      stock: stockB._id,
-      startDate: moment.utc().startOf('day').valueOf(),
-      endDate: moment.utc().endOf('day').valueOf(),
-    });
-    expect(result.length).toBe(1);
-    expect(result[0].startBalance).toBe(0);
-    expect(result[0].income).toBe(1);
-    expect(result[0].outcome).toBe(0);
-    expect(result[0].endBalance).toBe(1);
+    console.log(waybill);
   });
 });
