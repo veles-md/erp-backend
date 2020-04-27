@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ERPService } from './erp.service';
 import { CategoryModel, ProductModel, StockModel } from './interfaces';
@@ -19,12 +20,14 @@ import {
   CreateWaybillDto,
 } from './dto';
 import { WaybillService } from './waybill.service';
+import { TransactionService } from './transaction.service';
 
 @Controller('/erp')
 export class ERPController {
   constructor(
     private readonly erpService: ERPService,
     private readonly waybillService: WaybillService,
+    private readonly transactionService: TransactionService,
   ) {}
 
   // Cateories
@@ -98,5 +101,20 @@ export class ERPController {
   @Post('/waybill')
   async createWaybill(@Body() waybill: CreateWaybillDto) {
     await this.waybillService.createWaybill(waybill);
+  }
+
+  // Residue
+  @Get('/residue')
+  async calculateResidue(
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+    @Query('stocks') stock: string,
+  ) {
+    console.log('stock: ', stock);
+    return await this.transactionService.calculateResidue({
+      stock: stock,
+      startDate: startDate,
+      endDate: endDate,
+    });
   }
 }
