@@ -6,8 +6,14 @@ import {
   ArrayNotEmpty,
 } from 'class-validator';
 
-import { WaybillAction } from '../interfaces';
+import { WaybillAction, PriceType } from '../interfaces';
 
+interface Product {
+  readonly product: string;
+  readonly quantity: number;
+  readonly priceType: PriceType;
+  readonly priceValue: number;
+}
 export class CreateWaybillDto {
   @IsString()
   readonly action: WaybillAction;
@@ -21,5 +27,5 @@ export class CreateWaybillDto {
   readonly destination?: string;
   @IsArray()
   @ArrayNotEmpty()
-  readonly products: Array<any>;
+  readonly products: Product[];
 }

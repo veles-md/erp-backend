@@ -17,7 +17,7 @@ import {
   TransactionRef,
   TransactionSchema,
 } from './schemas';
-import { CategoryModel, ProductModel, StockModel } from './interfaces';
+import { WaybillAction, PriceType, WaybillType } from './interfaces';
 
 const mongod = new MongoMemoryServer();
 
@@ -26,7 +26,7 @@ afterAll(async () => {
   await mongod.stop();
 });
 
-describe('ERP module', () => {
+describe('Transaction service', () => {
   let erpService: ERPService;
   let transactionService: TransactionService;
   beforeAll(async () => {
@@ -69,33 +69,61 @@ describe('ERP module', () => {
     const product = await erpService.createProduct({
       category: category._id,
       title: 'Памятник-1',
+      price_retail: 400,
+      price_wholesale: 370,
     });
-    const waybill = await erpService.stockNextOutcomeWaybill(stock._id);
-    const date = moment().toDate();
-
     const transaction = await transactionService.makeTransaction({
       stock: stock._id,
-      change: 7,
+      quantity: 7,
       product: product._id,
-      price: {
-        type: 'retail',
-        value: 50,
-      },
-      date: date,
-      waybill: waybill,
-      createdAt: date,
-      updatedAt: date,
+      actionType: WaybillAction.BUY,
+      waybillType: WaybillType.INCOME,
+      priceType: PriceType.RETAIL,
+      priceValue: 50,
     });
-    expect(transaction.date).toBe(date);
-    expect(transaction.createdAt).toBe(date);
-    expect(transaction.updatedAt).toBe(date);
-    expect(transaction.waybill).toBe('С-1');
-    expect(transaction.price).toEqual({
-      type: 'retail',
-      value: 50,
-    });
-    expect(transaction.change).toBe(7);
+    expect(transaction.priceType).toBe('RETAIL');
+    expect(transaction.waybillType).toBe('INCOME');
+    expect(transaction.actionType).toBe('BUY');
+    expect(transaction.priceValue).toBe(50);
+    expect(transaction.quantity).toBe(7);
     expect(transaction.stock).toBe(stock._id);
     expect(transaction.product).toBe(product._id);
+  });
+
+  it('should calculate residue properly', async () => {
+    const stock = await erpService.createStock({
+      title: 'Магазин',
+      waybillPrefix: 'М',
+    });
+    const category = await erpService.createCategory({
+      title: 'Венок',
+      unit: 'ед',
+    });
+    const product = await erpService.createProduct({
+      category: category._id,
+      title: 'Венок-1',
+      price_wholesale: 50,
+      price_retail: 70,
+    });
+
+    await transactionService.makeWaybill({
+      action: WaybillAction.BUY,
+      products: [
+        {
+          product: product._id,
+          quantity: 5,
+          priceType: PriceType.RETAIL,
+          priceValue: 40,
+        },
+      ],
+      destination: stock._id,
+    });
+    const result = await transactionService.calculateResidue({
+      stock: stock._id,
+      startDate: moment.utc().startOf('day').valueOf(),
+      endDate: moment.utc().endOf('day').valueOf(),
+    });
+    expect(result.length).toBe(1);
+    expect(result[0].endBalance).toBe(5);
   });
 });
