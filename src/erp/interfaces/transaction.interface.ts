@@ -14,6 +14,6 @@ export interface Transaction {
 export interface TransactionModel extends Transaction, Document {}
 export interface ResidueOpts {
   readonly stock: string;
-  readonly startDate: any;
-  readonly endDate: any;
+  readonly startDate: Date;
+  readonly endDate: Date;
 }
