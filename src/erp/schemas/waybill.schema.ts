@@ -27,6 +27,10 @@ export const WaybillSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: TransactionRef }],
       required: true,
     },
+    date: {
+      type: Date,
+      required: true,
+    },
   },
   {
     timestamps: true,

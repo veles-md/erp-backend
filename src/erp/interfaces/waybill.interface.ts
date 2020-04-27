@@ -8,6 +8,7 @@ export interface Waybill {
   readonly number: number;
   readonly type: WaybillType;
   readonly action: WaybillAction;
+  readonly date: Date;
   readonly transactions: Transaction[];
 }
 export interface WaybillModel extends Waybill, Document {}
