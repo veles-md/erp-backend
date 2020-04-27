@@ -91,9 +91,13 @@ describe('Transaction service', () => {
   });
 
   it('should calculate residue properly', async () => {
-    const stock = await erpService.createStock({
+    const stockA = await erpService.createStock({
       title: 'Магазин',
       waybillPrefix: 'М',
+    });
+    const stockB = await erpService.createStock({
+      title: 'Морг',
+      waybillPrefix: 'МГ',
     });
     const category = await erpService.createCategory({
       title: 'Венок',
@@ -116,14 +120,77 @@ describe('Transaction service', () => {
           priceValue: 40,
         },
       ],
-      destination: stock._id,
+      destination: stockA._id,
     });
-    const result = await transactionService.calculateResidue({
-      stock: stock._id,
+    await transactionService.makeWaybill({
+      action: WaybillAction.IMPORT,
+      products: [
+        {
+          product: product._id,
+          quantity: 7,
+          priceType: PriceType.RETAIL,
+          priceValue: 30,
+        },
+      ],
+      destination: stockA._id,
+    });
+    await transactionService.makeWaybill({
+      action: WaybillAction.SELL,
+      products: [
+        {
+          product: product._id,
+          quantity: 2,
+          priceType: PriceType.RETAIL,
+          priceValue: 30,
+        },
+      ],
+      source: stockA._id,
+    });
+    await transactionService.makeWaybill({
+      action: WaybillAction.UTILIZATION,
+      products: [
+        {
+          product: product._id,
+          quantity: 1,
+          priceType: PriceType.RETAIL,
+          priceValue: 30,
+        },
+      ],
+      source: stockA._id,
+    });
+    await transactionService.makeWaybill({
+      action: WaybillAction.MOVE,
+      products: [
+        {
+          product: product._id,
+          quantity: 1,
+          priceType: PriceType.RETAIL,
+          priceValue: 30,
+        },
+      ],
+      source: stockA._id,
+      destination: stockB._id,
+    });
+
+    let result = await transactionService.calculateResidue({
+      stock: stockA._id,
       startDate: moment.utc().startOf('day').valueOf(),
       endDate: moment.utc().endOf('day').valueOf(),
     });
     expect(result.length).toBe(1);
-    expect(result[0].endBalance).toBe(5);
+    expect(result[0].startBalance).toBe(0);
+    expect(result[0].income).toBe(12);
+    expect(result[0].outcome).toBe(-4);
+    expect(result[0].endBalance).toBe(8);
+    result = await transactionService.calculateResidue({
+      stock: stockB._id,
+      startDate: moment.utc().startOf('day').valueOf(),
+      endDate: moment.utc().endOf('day').valueOf(),
+    });
+    expect(result.length).toBe(1);
+    expect(result[0].startBalance).toBe(0);
+    expect(result[0].income).toBe(1);
+    expect(result[0].outcome).toBe(0);
+    expect(result[0].endBalance).toBe(1);
   });
 });
