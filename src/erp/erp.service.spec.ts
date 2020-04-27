@@ -23,7 +23,7 @@ afterAll(async () => {
   await mongod.stop();
 });
 
-describe('ERP module', () => {
+describe('ERP Service', () => {
   let erpService: ERPService;
   let stock: StockModel;
   let product: ProductModel;
@@ -76,16 +76,12 @@ describe('ERP module', () => {
 
   it('should increment income waybill number', async () => {
     const result = await erpService.stockNextIncomeWaybill(stock._id);
-    expect(result).toBe(
-      `${stock.waybillPrefix}-${stock.incomeWaybillCount + 1}`,
-    );
+    expect(result).toBe(1);
   });
 
   it('should increment outcome waybill number', async () => {
     let result = await erpService.stockNextOutcomeWaybill(stock._id);
-    expect(result).toBe(
-      `${stock.waybillPrefix}-${stock.outcomeWaybillCount + 1}`,
-    );
+    expect(result).toBe(1);
   });
 
   it('should update stock', async () => {
