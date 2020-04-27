@@ -48,15 +48,20 @@ export class TransactionService {
 
   async calculateResidue(residueOpts: ResidueOpts): Promise<any> {
     const { stock, startDate, endDate } = residueOpts;
+
+    let matchingOpts: any = {
+      createdAt: {
+        $lte: endDate,
+      },
+    };
+    if (stock !== undefined) {
+      matchingOpts.stock = stock;
+    }
+
     const aggregated = await this.transactionModel
       .aggregate([
         {
-          $match: {
-            stock: Types.ObjectId(stock),
-            createdAt: {
-              $lte: endDate,
-            },
-          },
+          $match: matchingOpts,
         },
         {
           $group: {
