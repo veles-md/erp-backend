@@ -11,6 +11,8 @@ import {
   ProductSchema,
   StockRef,
   StockSchema,
+  WaybillRef,
+  WaybillSchema,
 } from './schemas';
 import { CategoryModel, ProductModel, StockModel } from './interfaces';
 
@@ -39,8 +41,9 @@ describe('ERP module', () => {
         }),
         MongooseModule.forFeature([
           { name: CategoryRef, schema: CategorySchema },
-          { name: ProductRef, schema: ProductSchema },
           { name: StockRef, schema: StockSchema },
+          { name: ProductRef, schema: ProductSchema },
+          { name: WaybillRef, schema: WaybillSchema },
         ]),
       ],
       providers: [ERPService],
