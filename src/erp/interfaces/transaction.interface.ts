@@ -1,17 +1,19 @@
 import { Document } from 'mongoose';
 
-import { WaybillItem } from './waybill-item.interface';
+import { WaybillAction, WaybillType, PriceType } from './enums';
 
-export interface Transaction extends WaybillItem {
+export interface Transaction {
+  readonly product: string;
   readonly stock: string;
-  readonly waybill: string;
-  readonly date: Date;
-  readonly updatedAt?: Date;
-  readonly createdAt?: Date;
+  readonly quantity: number;
+  readonly priceValue: number;
+  readonly priceType: PriceType;
+  readonly waybillType: WaybillType;
+  readonly actionType: WaybillAction;
 }
 export interface TransactionModel extends Transaction, Document {}
 export interface ResidueOpts {
   readonly stock: string;
-  readonly startDate: Date;
-  readonly endDate: Date;
+  readonly startDate: any;
+  readonly endDate: any;
 }

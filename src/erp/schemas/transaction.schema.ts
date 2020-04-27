@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose';
+import * as moment from 'moment';
 
 import { ProductRef } from './product.schema';
 import { StockRef } from './stock.schema';
@@ -19,33 +20,31 @@ export const TransactionSchema = new Schema({
     type: Number,
     required: true,
     validate: {
-      validator: (value: number) => value !== 0,
+      validator: (value: number) => value > 0,
     },
   },
-  // price: {
-  //   type: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   value: {
-  //     type: Number,
-  //     required: true,
-  //   },
-  // },
-  date: {
-    type: Date,
+  priceType: {
+    type: String,
     required: true,
   },
-  waybill: {
+  priceValue: {
+    type: String,
+    required: true,
+  },
+  waybillType: {
+    type: String,
+    required: true,
+  },
+  actionType: {
     type: String,
     required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: () => moment.utc().valueOf(),
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
+    default: () => moment.utc().valueOf(),
   },
 });
