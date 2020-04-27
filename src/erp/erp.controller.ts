@@ -16,11 +16,16 @@ import {
   UpdateProductDto,
   CreateStockDto,
   UpdateStockDto,
+  CreateWaybillDto,
 } from './dto';
+import { WaybillService } from './waybill.service';
 
 @Controller('/erp')
 export class ERPController {
-  constructor(private readonly erpService: ERPService) {}
+  constructor(
+    private readonly erpService: ERPService,
+    private readonly waybillService: WaybillService,
+  ) {}
 
   // Cateories
   @Get('/categories')
@@ -87,5 +92,11 @@ export class ERPController {
   @Delete('/stocks/:id')
   async removeStock(@Param('id') id: string) {
     return await this.erpService.removeStock(id);
+  }
+
+  // Waybills
+  @Post('/waybill')
+  async createWaybill(@Body() waybill: CreateWaybillDto) {
+    await this.waybillService.createWaybill(waybill);
   }
 }
