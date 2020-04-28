@@ -49,19 +49,24 @@ export class TransactionService {
   async calculateResidue(residueOpts: ResidueOpts): Promise<any> {
     const { stock, startDate, endDate } = residueOpts;
 
-    let matchingOpts: any = {
-      createdAt: {
-        $lte: endDate,
-      },
-    };
+    let matchingOpts: Array<any> = [];
     if (stock !== undefined) {
-      matchingOpts.stock = stock;
+      matchingOpts.push({
+        $match: {
+          stock: Types.ObjectId(stock),
+        },
+      });
     }
 
     const aggregated = await this.transactionModel
       .aggregate([
+        ...matchingOpts,
         {
-          $match: matchingOpts,
+          $match: {
+            createdAt: {
+              $lte: endDate,
+            },
+          },
         },
         {
           $group: {
@@ -104,9 +109,30 @@ export class TransactionService {
             },
           },
         },
+        {
+          $lookup: {
+            from: 'productrefs',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        {
+          $unwind: '$product',
+        },
+        {
+          $lookup: {
+            from: 'categoryrefs',
+            localField: 'product.category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        {
+          $unwind: '$category',
+        },
       ])
       .exec();
-    console.log(aggregated);
     return aggregated;
   }
 }
