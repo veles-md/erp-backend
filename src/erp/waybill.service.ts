@@ -25,7 +25,21 @@ export class WaybillService {
   ) {}
 
   async getWaybills(): Promise<WaybillModel[]> {
-    return await this.waybillModel.find({}).exec();
+    return await this.waybillModel
+      .find({})
+      .populate({
+        path: 'transactions',
+        populate: {
+          path: 'product',
+          select: ['title', 'category'],
+          populate: {
+            path: 'category',
+            select: ['title', 'unit'],
+          },
+        },
+      })
+      .populate('stock')
+      .exec();
   }
 
   async createWaybill(waybill: CreateWaybillDto): Promise<WaybillModel[]> {
