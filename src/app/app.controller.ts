@@ -14,4 +14,8 @@ export class AppController {
   getEnv() {
     return `Running in ${process.env.NODE_ENV}`;
   }
+  @Get('/version')
+  getVersion() {
+    return { version: 'Bleeding Edge' };
+  }
 }
