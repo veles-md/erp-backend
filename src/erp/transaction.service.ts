@@ -131,6 +131,9 @@ export class TransactionService {
         {
           $unwind: '$category',
         },
+        {
+          $sort: { 'product.title': 1 },
+        },
       ])
       .exec();
     return aggregated;
