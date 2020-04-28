@@ -18,12 +18,8 @@ export class CreateWaybillDto {
   @IsString()
   readonly action: WaybillAction;
   @IsString()
-  @Length(24)
-  @IsOptional()
   readonly source?: string;
   @IsString()
-  @Length(24)
-  @IsOptional()
   readonly destination?: string;
   @IsArray()
   @ArrayNotEmpty()
