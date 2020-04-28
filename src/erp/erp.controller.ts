@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ERPService } from './erp.service';
-import { CategoryModel, ProductModel, StockModel } from './interfaces';
+import { CategoryModel, ProductModel, StockModel, Waybill } from './interfaces';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
@@ -21,6 +21,7 @@ import {
 } from './dto';
 import { WaybillService } from './waybill.service';
 import { TransactionService } from './transaction.service';
+import moment = require('moment');
 
 @Controller('/erp')
 export class ERPController {
@@ -103,18 +104,22 @@ export class ERPController {
     await this.waybillService.createWaybill(waybill);
   }
 
+  @Get('/waybills')
+  async getWaybills(): Promise<Waybill[]> {
+    return await this.waybillService.getWaybills();
+  }
+
   // Residue
   @Get('/residue')
   async calculateResidue(
-    @Query('startDate') startDate: Date,
-    @Query('endDate') endDate: Date,
-    @Query('stocks') stock: string,
+    @Query('startDate') start: Date,
+    @Query('endDate') end: Date,
+    @Query('stock') stock: string,
   ) {
-    console.log('stock: ', stock);
     return await this.transactionService.calculateResidue({
       stock: stock,
-      startDate: startDate,
-      endDate: endDate,
+      startDate: moment.utc(start).startOf('day').toDate(),
+      endDate: moment.utc(end).endOf('day').toDate(),
     });
   }
 }
