@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsPositive,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { Product } from '../interfaces';
 
 export class CreateProductDto implements Product {
@@ -18,9 +19,11 @@ export class CreateProductDto implements Product {
   readonly title: string;
   @IsNumber()
   @IsPositive()
+  @Transform((n) => Number(n))
   readonly price_retail: number;
   @IsNumber()
   @IsPositive()
+  @Transform((n) => Number(n))
   readonly price_wholesale: number;
 }
 
@@ -34,8 +37,10 @@ export class UpdateProductDto implements Product {
   readonly title: string;
   @IsNumber()
   @IsPositive()
+  @Transform((n) => Number(n))
   readonly price_retail: number;
   @IsNumber()
   @IsPositive()
+  @Transform((n) => Number(n))
   readonly price_wholesale: number;
 }
