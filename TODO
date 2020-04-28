@@ -3,9 +3,9 @@ Product requires dependencies
     removal of dependency -> removal of Product
     removal of transactions in all stocks
 
-adjust transaction updatedAt/createdat
-enums for price types
     
 
-Removal of waybill -> remove transactions
-Move Waybill / Production waybill two-way binding
+Removal Product -> remove transactions in all stocks
+Removal of stock -> remove transactions of stock
+
+Get single category/product/stock
