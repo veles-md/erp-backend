@@ -41,11 +41,16 @@ export class ERPService {
   }
   async removeCategory(id: string) {
     return await this.categoryModel.findByIdAndDelete(id).exec();
+    // TODO remove products & transactions
   }
 
   // Products
-  async getProducts(): Promise<ProductModel[]> {
-    return await this.productModel.find({}).populate('category').exec();
+  async getProducts(category?: string): Promise<ProductModel[]> {
+    const opts: any = {};
+    if (category) {
+      opts.category = category;
+    }
+    return await this.productModel.find(opts).populate('category').exec();
   }
   async createProduct(product: CreateProductDto): Promise<ProductModel> {
     return await (
@@ -65,6 +70,7 @@ export class ERPService {
   }
   async removeProduct(id: string) {
     return await this.productModel.findByIdAndRemove(id).exec();
+    // TODO remove transactions
   }
 
   // Stocks
