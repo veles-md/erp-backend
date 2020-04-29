@@ -8,8 +8,8 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { ERPService } from './erp.service';
-import { CategoryModel, ProductModel, StockModel, Waybill } from './interfaces';
+
+import { CategoryModel, ProductModel, StockModel } from './interfaces';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
@@ -19,7 +19,7 @@ import {
   UpdateStockDto,
   CreateWaybillDto,
 } from './dto';
-import { WaybillService } from './waybill.service';
+import { ERPService } from './erp.service';
 import { TransactionService } from './transaction.service';
 import moment = require('moment');
 
@@ -27,7 +27,6 @@ import moment = require('moment');
 export class ERPController {
   constructor(
     private readonly erpService: ERPService,
-    private readonly waybillService: WaybillService,
     private readonly transactionService: TransactionService,
   ) {}
 
@@ -98,15 +97,14 @@ export class ERPController {
     return await this.erpService.removeStock(id);
   }
 
-  // Waybills
   @Post('/waybill')
   async createWaybill(@Body() waybill: CreateWaybillDto) {
-    await this.waybillService.createWaybill(waybill);
+    await this.transactionService.CreateWaybill(waybill);
   }
 
   @Get('/waybills')
-  async getWaybills(): Promise<Waybill[]> {
-    return await this.waybillService.getWaybills();
+  async getWaybills(): Promise<any> {
+    return await this.transactionService.getWaybills();
   }
 
   // Residue

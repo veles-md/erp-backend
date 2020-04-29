@@ -10,13 +10,10 @@ import {
   ProductSchema,
   TransactionRef,
   TransactionSchema,
-  WaybillRef,
-  WaybillSchema,
 } from './schemas';
 
 import { TransactionService } from './transaction.service';
 import { ERPService } from './erp.service';
-import { WaybillService } from './waybill.service';
 import { ERPController } from './erp.controller';
 
 @Module({
@@ -26,10 +23,9 @@ import { ERPController } from './erp.controller';
       { name: StockRef, schema: StockSchema },
       { name: ProductRef, schema: ProductSchema },
       { name: TransactionRef, schema: TransactionSchema },
-      { name: WaybillRef, schema: WaybillSchema },
     ]),
   ],
   controllers: [ERPController],
-  providers: [ERPService, TransactionService, WaybillService],
+  providers: [ERPService, TransactionService],
 })
 export class ERPModule {}
