@@ -13,6 +13,7 @@ import {
   WaybillItem,
 } from './interfaces';
 import { CreateWaybillDto } from './dto';
+
 import { ERPService } from './erp.service';
 
 type BulkData = {
@@ -76,9 +77,38 @@ export class TransactionService {
       }
       case WaybillAction.SELL:
       case WaybillAction.UTILIZATION: {
-        const outcomeWB = await this.erpService.stockNextIncomeWaybill(
+        const outcomeWB = await this.erpService.stockNextOutcomeWaybill(
           waybill.source,
         );
+        await this.WriteBulkTransactions({
+          stock: source,
+          items: products,
+          waybill: {
+            type: WaybillType.OUTCOME,
+            action: action,
+            date: date,
+            id: outcomeWB,
+          },
+        });
+        break;
+      }
+      case WaybillAction.MOVE: {
+        const incomeWB = await this.erpService.stockNextIncomeWaybill(
+          waybill.destination,
+        );
+        const outcomeWB = await this.erpService.stockNextOutcomeWaybill(
+          waybill.source,
+        );
+        await this.WriteBulkTransactions({
+          stock: destination,
+          items: products,
+          waybill: {
+            type: WaybillType.INCOME,
+            action: action,
+            date: date,
+            id: incomeWB,
+          },
+        });
         await this.WriteBulkTransactions({
           stock: source,
           items: products,
@@ -94,7 +124,7 @@ export class TransactionService {
     }
   }
 
-  async calculateResidue(residueOpts: ResidueOpts): Promise<any> {
+  async CalculateResidue(residueOpts: ResidueOpts): Promise<any> {
     const { stock, startDate, endDate } = residueOpts;
 
     let matchingOpts: Array<any> = [];
@@ -120,11 +150,41 @@ export class TransactionService {
           $group: {
             _id: '$product',
             endBalance: {
-              $sum: '$quantity',
+              $sum: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$waybill.type', 'INCOME'] },
+                      then: '$quantity',
+                    },
+                    {
+                      case: { $eq: ['$waybill.type', 'OUTCOME'] },
+                      then: { $multiply: [-1, '$quantity'] },
+                    },
+                  ],
+                },
+              },
             },
             startBalance: {
               $sum: {
-                $cond: [{ $lte: ['$createdAt', startDate] }, '$quantity', 0],
+                $cond: [
+                  { $lte: ['$createdAt', startDate] },
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: { $eq: ['$waybill.type', 'INCOME'] },
+                          then: '$quantity',
+                        },
+                        {
+                          case: { $eq: ['$waybill.type', 'OUTCOME'] },
+                          then: { $multiply: [-1, '$quantity'] },
+                        },
+                      ],
+                    },
+                  },
+                  0,
+                ],
               },
             },
             income: {
@@ -133,7 +193,7 @@ export class TransactionService {
                   {
                     $and: [
                       { $gte: ['$createdAt', startDate] },
-                      { $gt: ['$quantity', 0] },
+                      { $eq: ['$waybill.type', 'INCOME'] },
                     ],
                   },
                   '$quantity',
@@ -147,10 +207,10 @@ export class TransactionService {
                   {
                     $and: [
                       { $gte: ['$createdAt', startDate] },
-                      { $lt: ['$quantity', 0] },
+                      { $eq: ['$waybill.type', 'OUTCOME'] },
                     ],
                   },
-                  '$quantity',
+                  { $multiply: [-1, '$quantity'] },
                   0,
                 ],
               },
@@ -187,7 +247,7 @@ export class TransactionService {
     return aggregated;
   }
 
-  async getWaybills() {
+  async GetWaybills() {
     return await this.transactionModel
       .aggregate([
         {
@@ -227,6 +287,9 @@ export class TransactionService {
           $group: {
             _id: {
               stock: '$stock',
+              waybill: '$waybill.id',
+              action: '$waybill.action',
+              type: '$waybill.type',
             },
             items: {
               $push: {

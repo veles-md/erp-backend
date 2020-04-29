@@ -104,7 +104,7 @@ export class ERPController {
 
   @Get('/waybills')
   async getWaybills(): Promise<any> {
-    return await this.transactionService.getWaybills();
+    return await this.transactionService.GetWaybills();
   }
 
   // Residue
@@ -114,7 +114,7 @@ export class ERPController {
     @Query('endDate') end: Date,
     @Query('stock') stock: string,
   ) {
-    return await this.transactionService.calculateResidue({
+    return await this.transactionService.CalculateResidue({
       stock: stock,
       startDate: moment.utc(start).startOf('day').toDate(),
       endDate: moment.utc(end).endOf('day').toDate(),
