@@ -11,8 +11,6 @@ import {
   ProductSchema,
   StockRef,
   StockSchema,
-  WaybillRef,
-  WaybillSchema,
 } from './schemas';
 
 let mongod: MongoMemoryServer;
@@ -43,7 +41,6 @@ describe('ERP Service', () => {
           { name: CategoryRef, schema: CategorySchema },
           { name: StockRef, schema: StockSchema },
           { name: ProductRef, schema: ProductSchema },
-          { name: WaybillRef, schema: WaybillSchema },
         ]),
       ],
       providers: [ERPService],
@@ -181,7 +178,7 @@ describe('ERP Service', () => {
       waybillPrefix: 'TEST-Prefix',
     });
     const result = await erpService.stockNextIncomeWaybill(stock._id);
-    expect(result).toBe(1);
+    expect(result).toBe('TEST-Prefix-1');
   });
   it('should increment outcome waybill number', async () => {
     const stock = await erpService.createStock({
@@ -189,7 +186,7 @@ describe('ERP Service', () => {
       waybillPrefix: 'TEST-Prefix',
     });
     let result = await erpService.stockNextOutcomeWaybill(stock._id);
-    expect(result).toBe(1);
+    expect(result).toBe('TEST-Prefix-1');
   });
   it('should update stock', async () => {
     const stock = await erpService.createStock({
