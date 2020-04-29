@@ -91,20 +91,20 @@ export class ERPService {
   async removeStock(id: string) {
     return await this.stockModel.findByIdAndRemove(id).exec();
   }
-  async stockNextIncomeWaybill(id: string): Promise<number> {
-    let result = await this.stockModel
+  async stockNextIncomeWaybill(id: string): Promise<string> {
+    const { waybillPrefix, incomeWaybillCount } = await this.stockModel
       .findByIdAndUpdate(id, {
         $inc: { incomeWaybillCount: 1 },
       })
       .exec();
-    return result.toObject().incomeWaybillCount + 1;
+    return `${waybillPrefix}-${incomeWaybillCount + 1}`;
   }
-  async stockNextOutcomeWaybill(id: string): Promise<number> {
-    let result = await this.stockModel
+  async stockNextOutcomeWaybill(id: string): Promise<string> {
+    const { waybillPrefix, outcomeWaybillCount } = await this.stockModel
       .findByIdAndUpdate(id, {
         $inc: { outcomeWaybillCount: 1 },
       })
       .exec();
-    return result.toObject().outcomeWaybillCount + 1;
+    return `${waybillPrefix}-${outcomeWaybillCount + 1}`;
   }
 }

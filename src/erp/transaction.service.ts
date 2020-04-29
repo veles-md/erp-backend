@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import * as moment from 'moment';
 
 import { TransactionRef } from './schemas';
 import {
@@ -9,44 +10,121 @@ import {
   ResidueOpts,
   WaybillAction,
   WaybillType,
+  WaybillItem,
 } from './interfaces';
+import { CreateWaybillDto } from './dto';
 
+import { ERPService } from './erp.service';
+
+type BulkData = {
+  stock: string;
+  waybill: {
+    action: WaybillAction;
+    type: WaybillType;
+    date: Date;
+    id: string;
+  };
+  items: WaybillItem[];
+};
 @Injectable()
 export class TransactionService {
   constructor(
     @InjectModel(TransactionRef)
     private readonly transactionModel: Model<TransactionModel>,
+    private readonly erpService: ERPService,
   ) {}
 
-  async WriteBulkTransactions(
-    waybillType: WaybillType,
-    actionType: WaybillAction,
-    stock: string,
-    items: any[],
-  ): Promise<TransactionModel[]> {
-    return await Promise.all([
-      ...items.map((item) =>
+  async WriteBulkTransactions(data: BulkData): Promise<void> {
+    const { stock, items, waybill } = data;
+    console.log(data);
+    await Promise.all(
+      items.map((item) =>
         this.WriteTransaction({
-          waybillType: waybillType,
-          actionType: actionType,
           stock: stock,
           product: item.product,
-          quantity:
-            waybillType === WaybillType.INCOME
-              ? item.quantity
-              : -1 * item.quantity,
-          priceType: item.priceType,
-          priceValue: item.priceValue,
+          quantity: item.quantity,
+          snapshot: item.snapshot,
+          waybill: waybill,
         }),
       ),
-    ]);
+    );
   }
 
   async WriteTransaction(transaction: Transaction): Promise<TransactionModel> {
     return await new this.transactionModel(transaction).save();
   }
 
-  async calculateResidue(residueOpts: ResidueOpts): Promise<any> {
+  async CreateWaybill(waybill: CreateWaybillDto) {
+    const { action, source, destination, products } = waybill;
+    const date = moment.utc().toDate();
+    switch (action) {
+      case WaybillAction.BUY:
+      case WaybillAction.IMPORT: {
+        const incomeWB = await this.erpService.stockNextIncomeWaybill(
+          waybill.destination,
+        );
+        await this.WriteBulkTransactions({
+          stock: destination,
+          items: products,
+          waybill: {
+            type: WaybillType.INCOME,
+            action: action,
+            date: date,
+            id: incomeWB,
+          },
+        });
+        break;
+      }
+      case WaybillAction.SELL:
+      case WaybillAction.UTILIZATION: {
+        const outcomeWB = await this.erpService.stockNextOutcomeWaybill(
+          waybill.source,
+        );
+        await this.WriteBulkTransactions({
+          stock: source,
+          items: products,
+          waybill: {
+            type: WaybillType.OUTCOME,
+            action: action,
+            date: date,
+            id: outcomeWB,
+          },
+        });
+        break;
+      }
+      case WaybillAction.MOVE: {
+        const incomeWB = await this.erpService.stockNextIncomeWaybill(
+          waybill.destination,
+        );
+        const outcomeWB = await this.erpService.stockNextOutcomeWaybill(
+          waybill.source,
+        );
+        await this.WriteBulkTransactions({
+          stock: destination,
+          items: products,
+          waybill: {
+            type: WaybillType.INCOME,
+            action: action,
+            date: date,
+            id: incomeWB,
+          },
+        });
+        await this.WriteBulkTransactions({
+          stock: source,
+          items: products,
+          waybill: {
+            type: WaybillType.OUTCOME,
+            action: action,
+            date: date,
+            id: outcomeWB,
+          },
+        });
+        break;
+      }
+    }
+  }
+
+  async CalculateResidue(residueOpts: ResidueOpts): Promise<any> {
     const { stock, startDate, endDate } = residueOpts;
 
     let matchingOpts: Array<any> = [];
@@ -72,11 +150,41 @@ export class TransactionService {
           $group: {
             _id: '$product',
             endBalance: {
-              $sum: '$quantity',
+              $sum: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$waybill.type', 'INCOME'] },
+                      then: '$quantity',
+                    },
+                    {
+                      case: { $eq: ['$waybill.type', 'OUTCOME'] },
+                      then: { $multiply: [-1, '$quantity'] },
+                    },
+                  ],
+                },
+              },
             },
             startBalance: {
               $sum: {
-                $cond: [{ $lte: ['$createdAt', startDate] }, '$quantity', 0],
+                $cond: [
+                  { $lte: ['$createdAt', startDate] },
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: { $eq: ['$waybill.type', 'INCOME'] },
+                          then: '$quantity',
+                        },
+                        {
+                          case: { $eq: ['$waybill.type', 'OUTCOME'] },
+                          then: { $multiply: [-1, '$quantity'] },
+                        },
+                      ],
+                    },
+                  },
+                  0,
+                ],
               },
             },
             income: {
@@ -85,7 +193,7 @@ export class TransactionService {
                   {
                     $and: [
                       { $gte: ['$createdAt', startDate] },
-                      { $gt: ['$quantity', 0] },
+                      { $eq: ['$waybill.type', 'INCOME'] },
                     ],
                   },
                   '$quantity',
@@ -99,10 +207,10 @@ export class TransactionService {
                   {
                     $and: [
                       { $gte: ['$createdAt', startDate] },
-                      { $lt: ['$quantity', 0] },
+                      { $eq: ['$waybill.type', 'OUTCOME'] },
                     ],
                   },
-                  '$quantity',
+                  { $multiply: [-1, '$quantity'] },
                   0,
                 ],
               },
@@ -137,5 +245,63 @@ export class TransactionService {
       ])
       .exec();
     return aggregated;
+  }
+
+  async GetWaybills() {
+    return await this.transactionModel
+      .aggregate([
+        {
+          $lookup: {
+            from: 'stockrefs',
+            localField: 'stock',
+            foreignField: '_id',
+            as: 'stock',
+          },
+        },
+        {
+          $unwind: '$stock',
+        },
+        {
+          $lookup: {
+            from: 'productrefs',
+            localField: 'product',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        {
+          $unwind: '$product',
+        },
+        {
+          $lookup: {
+            from: 'categoryrefs',
+            localField: 'product.category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        {
+          $unwind: '$category',
+        },
+        {
+          $group: {
+            _id: {
+              stock: '$stock',
+              waybill: '$waybill.id',
+              action: '$waybill.action',
+              type: '$waybill.type',
+            },
+            items: {
+              $push: {
+                product: '$product.title',
+                category: '$category.title',
+                quantity: '$quantity',
+                price: '$snapshot.price',
+              },
+            },
+          },
+        },
+      ])
+      .exec();
   }
 }

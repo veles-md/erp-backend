@@ -11,8 +11,6 @@ import {
   ProductSchema,
   StockRef,
   StockSchema,
-  WaybillRef,
-  WaybillSchema,
 } from './schemas';
 
 let mongod: MongoMemoryServer;
@@ -43,7 +41,6 @@ describe('ERP Service', () => {
           { name: CategoryRef, schema: CategorySchema },
           { name: StockRef, schema: StockSchema },
           { name: ProductRef, schema: ProductSchema },
-          { name: WaybillRef, schema: WaybillSchema },
         ]),
       ],
       providers: [ERPService],
@@ -88,20 +85,35 @@ describe('ERP Service', () => {
     result = await erpService.getCategories();
     expect(result.length).toBe(0);
   });
-  it('should create product', async () => {
+  it('should create with default discount product', async () => {
     const category = await erpService.createCategory({
       title: 'Венки',
       unit: 'ед',
     });
     const product = await erpService.createProduct({
       category: category._id,
-      price_retail: 30,
-      price_wholesale: 25,
+      price: 100,
       title: 'Венок-1',
     });
     expect(product.title).toBe('Венок-1');
-    expect(product.price_retail).toBe(30);
-    expect(product.price_wholesale).toBe(25);
+    expect(product.price).toBe(100);
+    expect(product.discount).toBe(0);
+    expect(product.category).toBeDefined();
+  });
+  it('should create with discount product', async () => {
+    const category = await erpService.createCategory({
+      title: 'Венки',
+      unit: 'ед',
+    });
+    const product = await erpService.createProduct({
+      category: category._id,
+      price: 100,
+      discount: 5,
+      title: 'Венок-1',
+    });
+    expect(product.title).toBe('Венок-1');
+    expect(product.price).toBe(100);
+    expect(product.discount).toBe(5);
     expect(product.category).toBeDefined();
   });
   it('should update product', async () => {
@@ -111,20 +123,19 @@ describe('ERP Service', () => {
     });
     const product = await erpService.createProduct({
       category: category._id,
-      price_retail: 30,
-      price_wholesale: 25,
+      price: 30,
       title: 'Венок-1',
     });
     await erpService.updateProduct(product._id, {
       category: category._id,
       title: 'Венок-2',
-      price_retail: 20,
-      price_wholesale: 15,
+      price: 20,
+      discount: 1,
     });
     const result = await erpService.getProducts();
     expect(result[0].title).toBe('Венок-2');
-    expect(result[0].price_retail).toBe(20);
-    expect(result[0].price_wholesale).toBe(15);
+    expect(result[0].price).toBe(20);
+    expect(result[0].discount).toBe(1);
   });
   it('should get products', async () => {
     const categoryA = await erpService.createCategory({
@@ -137,14 +148,12 @@ describe('ERP Service', () => {
     });
     await erpService.createProduct({
       category: categoryA._id,
-      price_retail: 30,
-      price_wholesale: 25,
+      price: 30,
       title: 'Венок-1',
     });
     await erpService.createProduct({
       category: categoryB._id,
-      price_retail: 30,
-      price_wholesale: 25,
+      price: 30,
       title: 'Гроб-1',
     });
     const resultA = await erpService.getProducts();
@@ -169,7 +178,7 @@ describe('ERP Service', () => {
       waybillPrefix: 'TEST-Prefix',
     });
     const result = await erpService.stockNextIncomeWaybill(stock._id);
-    expect(result).toBe(1);
+    expect(result).toBe('TEST-Prefix-1');
   });
   it('should increment outcome waybill number', async () => {
     const stock = await erpService.createStock({
@@ -177,7 +186,7 @@ describe('ERP Service', () => {
       waybillPrefix: 'TEST-Prefix',
     });
     let result = await erpService.stockNextOutcomeWaybill(stock._id);
-    expect(result).toBe(1);
+    expect(result).toBe('TEST-Prefix-1');
   });
   it('should update stock', async () => {
     const stock = await erpService.createStock({

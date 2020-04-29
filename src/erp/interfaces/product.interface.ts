@@ -3,8 +3,8 @@ import { Document } from 'mongoose';
 export interface Product {
   readonly title: string;
   readonly category: string;
-  readonly price_retail: number;
-  readonly price_wholesale: number;
+  readonly price: number;
+  readonly discount?: number;
 }
 
 export interface ProductModel extends Product, Document {}

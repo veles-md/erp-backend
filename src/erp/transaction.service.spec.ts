@@ -15,10 +15,8 @@ import {
   StockSchema,
   TransactionRef,
   TransactionSchema,
-  WaybillRef,
-  WaybillSchema,
 } from './schemas';
-import { WaybillAction, PriceType, WaybillType } from './interfaces';
+import { WaybillAction, WaybillType } from './interfaces';
 
 let mongod: MongoMemoryServer;
 
@@ -50,7 +48,6 @@ describe('Transaction service', () => {
           { name: ProductRef, schema: ProductSchema },
           { name: StockRef, schema: StockSchema },
           { name: TransactionRef, schema: TransactionSchema },
-          { name: WaybillRef, schema: WaybillSchema },
         ]),
       ],
       providers: [ERPService, TransactionService],
@@ -75,22 +72,30 @@ describe('Transaction service', () => {
     const product = await erpService.createProduct({
       category: category._id,
       title: 'Памятник-1',
-      price_retail: 400,
-      price_wholesale: 370,
+      price: 200,
     });
+    const date = new Date();
     const transaction = await transactionService.WriteTransaction({
       stock: stock._id,
       quantity: 7,
       product: product._id,
-      actionType: WaybillAction.BUY,
-      waybillType: WaybillType.INCOME,
-      priceType: PriceType.RETAIL,
-      priceValue: 50,
+      waybill: {
+        action: WaybillAction.BUY,
+        type: WaybillType.INCOME,
+        date: date,
+        id: 'some-id',
+      },
+      snapshot: {
+        discount: 0,
+        reduce: false,
+        price: 20,
+      },
     });
-    expect(transaction.priceType).toBe('RETAIL');
-    expect(transaction.waybillType).toBe('INCOME');
-    expect(transaction.actionType).toBe('BUY');
-    expect(transaction.priceValue).toBe(50);
+    expect(transaction.snapshot.price).toBe(20);
+    expect(transaction.waybill.type).toBe('INCOME');
+    expect(transaction.waybill.action).toBe('BUY');
+    expect(transaction.waybill.id).toBe('some-id');
+    expect(transaction.waybill.date).toBe(date);
     expect(transaction.quantity).toBe(7);
     expect(transaction.stock).toBe(stock._id);
     expect(transaction.product).toBe(product._id);
