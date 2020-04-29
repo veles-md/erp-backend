@@ -23,27 +23,39 @@ export const TransactionSchema = new Schema({
       validator: (value: number) => value !== 0,
     },
   },
-  priceType: {
-    type: String,
-    required: true,
+  waybill: {
+    type: {
+      type: String,
+      required: true,
+    },
+    action: {
+      type: String,
+      required: true,
+    },
+    id: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
   },
-  priceValue: {
-    type: Number,
-    required: true,
-  },
-  waybillType: {
-    type: String,
-    required: true,
-  },
-  actionType: {
-    type: String,
-    required: true,
+  snapshot: {
+    price: {
+      type: Number,
+      required: true,
+    },
+    reduce: {
+      type: Boolean,
+      required: true,
+    },
+    discount: {
+      type: Number,
+      required: true,
+    },
   },
   createdAt: {
-    type: Date,
-    default: () => moment.utc().valueOf(),
-  },
-  updatedAt: {
     type: Date,
     default: () => moment.utc().valueOf(),
   },
