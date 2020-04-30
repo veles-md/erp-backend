@@ -9,3 +9,5 @@ Removal Product -> remove transactions in all stocks
 Removal of stock -> remove transactions of stock
 
 Get single category/product/stock
+
+CREATE INDEXES for DB
