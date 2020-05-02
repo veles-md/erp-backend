@@ -7,7 +7,7 @@ export class CreateCategoryDto implements Category {
   @IsString()
   @MinLength(4)
   @MaxLength(15)
-  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
+  @Transform((v: string) => v.trim().replace(/^./, (c) => c.toUpperCase()))
   readonly title: string;
   @IsString()
   @MinLength(1)
@@ -18,7 +18,7 @@ export class UpdateCategoryDto implements Category {
   @IsString()
   @MinLength(4)
   @MaxLength(15)
-  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
+  @Transform((v: string) => v.trim().replace(/^./, (c) => c.toUpperCase()))
   readonly title: string;
   @IsString()
   @MinLength(1)
