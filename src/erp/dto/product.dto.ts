@@ -19,10 +19,12 @@ export class CreateProductDto implements Product {
   @IsString()
   @MinLength(3)
   @MaxLength(10)
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
   readonly code: string;
   @IsString()
   @MinLength(3)
-  @MaxLength(30)
+  @MaxLength(50)
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
   readonly title: string;
   @IsNumber()
   @Transform((n) => Number(n))
@@ -42,10 +44,12 @@ export class UpdateProductDto implements Product {
   @IsString()
   @MinLength(3)
   @MaxLength(10)
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
   readonly code: string;
   @IsString()
   @MinLength(3)
-  @MaxLength(30)
+  @MaxLength(50)
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
   readonly title: string;
   @IsNumber()
   @IsPositive()
