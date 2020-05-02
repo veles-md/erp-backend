@@ -71,7 +71,8 @@ describe('Transaction service', () => {
     });
     const product = await erpService.createProduct({
       category: category._id,
-      title: 'Памятник-1',
+      code: 'Памятник-1',
+      title: 'gravestone',
       price: 200,
     });
     const date = new Date();

@@ -93,9 +93,11 @@ describe('ERP Service', () => {
     const product = await erpService.createProduct({
       category: category._id,
       price: 100,
-      title: 'Венок-1',
+      code: 'Венок-1',
+      title: 'some-title',
     });
-    expect(product.title).toBe('Венок-1');
+    expect(product.code).toBe('Венок-1');
+    expect(product.title).toBe('some-title');
     expect(product.price).toBe(100);
     expect(product.discount).toBe(0);
     expect(product.category).toBeDefined();
@@ -109,9 +111,11 @@ describe('ERP Service', () => {
       category: category._id,
       price: 100,
       discount: 5,
-      title: 'Венок-1',
+      code: 'Венок-1',
+      title: 'some-title',
     });
-    expect(product.title).toBe('Венок-1');
+    expect(product.code).toBe('Венок-1');
+    expect(product.title).toBe('some-title');
     expect(product.price).toBe(100);
     expect(product.discount).toBe(5);
     expect(product.category).toBeDefined();
@@ -124,16 +128,19 @@ describe('ERP Service', () => {
     const product = await erpService.createProduct({
       category: category._id,
       price: 30,
-      title: 'Венок-1',
+      code: 'Венок-1',
+      title: 'some-title',
     });
     await erpService.updateProduct(product._id, {
       category: category._id,
-      title: 'Венок-2',
+      code: 'Венок-2',
+      title: 'some-other-title',
       price: 20,
       discount: 1,
     });
     const result = await erpService.getProducts();
-    expect(result[0].title).toBe('Венок-2');
+    expect(result[0].code).toBe('Венок-2');
+    expect(result[0].title).toBe('some-other-title');
     expect(result[0].price).toBe(20);
     expect(result[0].discount).toBe(1);
   });
@@ -149,12 +156,14 @@ describe('ERP Service', () => {
     await erpService.createProduct({
       category: categoryA._id,
       price: 30,
-      title: 'Венок-1',
+      code: 'Венок-1',
+      title: 'some-title',
     });
     await erpService.createProduct({
       category: categoryB._id,
       price: 30,
-      title: 'Гроб-1',
+      code: 'Гроб-1',
+      title: 'some-title',
     });
     const resultA = await erpService.getProducts();
     expect(resultA.length).toBe(2);

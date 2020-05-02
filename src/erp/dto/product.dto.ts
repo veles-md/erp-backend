@@ -19,6 +19,10 @@ export class CreateProductDto implements Product {
   @IsString()
   @MinLength(3)
   @MaxLength(10)
+  readonly code: string;
+  @IsString()
+  @MinLength(3)
+  @MaxLength(30)
   readonly title: string;
   @IsNumber()
   @Transform((n) => Number(n))
@@ -38,6 +42,10 @@ export class UpdateProductDto implements Product {
   @IsString()
   @MinLength(3)
   @MaxLength(10)
+  readonly code: string;
+  @IsString()
+  @MinLength(3)
+  @MaxLength(30)
   readonly title: string;
   @IsNumber()
   @IsPositive()

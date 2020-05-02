@@ -5,10 +5,14 @@ import { CategoryRef } from './category.schema';
 export const ProductRef = 'ProductRef';
 export const ProductSchema = new Schema(
   {
-    title: {
+    code: {
       type: String,
       required: true,
       unique: true,
+    },
+    title: {
+      type: String,
+      required: true,
     },
     category: {
       type: Schema.Types.ObjectId,
