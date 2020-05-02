@@ -19,12 +19,14 @@ export class CreateProductDto implements Product {
   @IsString()
   @MinLength(3)
   @MaxLength(10)
-  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase()))
+  @Transform((v: string) => v.trim())
   readonly code: string;
   @IsString()
   @MinLength(3)
   @MaxLength(50)
-  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase()))
+  @Transform((v: string) => v.trim())
   readonly title: string;
   @IsNumber()
   @Transform((n) => Number(n))
@@ -44,12 +46,14 @@ export class UpdateProductDto implements Product {
   @IsString()
   @MinLength(3)
   @MaxLength(10)
-  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase()))
+  @Transform((v: string) => v.trim())
   readonly code: string;
   @IsString()
   @MinLength(3)
   @MaxLength(50)
-  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase().trim()))
+  @Transform((v: string) => v.replace(/^w/, (c) => c.toUpperCase()))
+  @Transform((v: string) => v.trim())
   readonly title: string;
   @IsNumber()
   @IsPositive()
