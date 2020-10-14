@@ -3,34 +3,32 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { UserRef } from './schemas';
-import { UserModel } from './interfaces';
+import { IUserModel } from './interfaces';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectModel(UserRef) private readonly userModel: Model<UserModel>,
-  ) {}
+  constructor(@InjectModel(UserRef) private userModel: Model<IUserModel>) {}
 
-  async createUser(user: CreateUserDto): Promise<UserModel> {
+  async create(user: CreateUserDto): Promise<IUserModel> {
     return await new this.userModel(user).save();
   }
 
-  async updateUser(id: string, user: UpdateUserDto): Promise<UserModel> {
+  async update(id: string, user: UpdateUserDto): Promise<IUserModel> {
     return await this.userModel.findByIdAndUpdate(id, user, {
       new: true,
     });
   }
 
-  async getUsers(): Promise<UserModel[]> {
+  async findAll(): Promise<IUserModel[]> {
     return await this.userModel.find({}).exec();
   }
 
-  async removeUser(id: string): Promise<UserModel> {
+  async remove(id: string): Promise<IUserModel> {
     return await this.userModel.findByIdAndRemove(id).exec();
   }
 
-  async findOne(username: string): Promise<UserModel> {
-    return await this.userModel.findOne({ username: username }).exec();
+  async findOneByEmail(email: string): Promise<IUserModel> {
+    return await this.userModel.findOne({ email: email }).exec();
   }
 }

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 import { ERPService } from './erp.service';
 import {
@@ -13,20 +13,22 @@ import {
   StockSchema,
 } from './schemas';
 
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryServer = new MongoMemoryServer({
+  autoStart: true,
+});
 
 describe('ERP Service', () => {
   let module: TestingModule;
   let erpService: ERPService;
 
   afterEach(async () => {
-    await module.close();
-    await mongoose.disconnect();
-    await mongod.stop();
+    // await module.close();
+    // await mongoose.disconnect();
+    // await mongod.stop();
   });
 
   beforeEach(async () => {
-    mongod = new MongoMemoryServer();
+    // mongod = new MongoMemoryServer();
     module = await Test.createTestingModule({
       imports: [
         MongooseModule.forRootAsync({
