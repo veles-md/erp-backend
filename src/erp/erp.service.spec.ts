@@ -22,13 +22,13 @@ describe('ERP Service', () => {
   let erpService: ERPService;
 
   afterEach(async () => {
-    // await module.close();
-    // await mongoose.disconnect();
-    // await mongod.stop();
+    await module.close();
+    await mongoose.disconnect();
+    await mongod.stop();
   });
 
   beforeEach(async () => {
-    // mongod = new MongoMemoryServer();
+    mongod = new MongoMemoryServer();
     module = await Test.createTestingModule({
       imports: [
         MongooseModule.forRootAsync({
