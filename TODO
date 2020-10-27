@@ -11,3 +11,5 @@ Removal of stock -> remove transactions of stock
 Get single category/product/stock
 
 CREATE INDEXES for DB
+
+CHECK IF PASSPORTMODULE REQUIRED

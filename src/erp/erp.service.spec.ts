@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 import { ERPService } from './erp.service';
 import {
@@ -13,7 +13,9 @@ import {
   StockSchema,
 } from './schemas';
 
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryServer = new MongoMemoryServer({
+  autoStart: true,
+});
 
 describe('ERP Service', () => {
   let module: TestingModule;
